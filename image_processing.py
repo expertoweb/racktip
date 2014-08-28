@@ -10,10 +10,9 @@ from pygame.locals import *
 from skimage import data
 from scipy import ndimage
 from skimage import io
+from skimage.color import rgb2gray
 from skimage.draw import ellipse
-from skimage.morphology import label
-from skimage.measure import regionprops
-
+from skimage.feature import peak
 
 WIDTH = 128
 HEIGHT = 160
@@ -70,7 +69,6 @@ def main():
 
         saveSurface(pixels, './webcam2.jpg')
 
-        #GPIO.output(4, False)
         #ticks = clock.tick(60)
         GPIO.output(4, True)
 
@@ -78,19 +76,47 @@ def main():
             if eventos.type == QUIT:
                 sys.exit(0)
 
-
-	lena =  io.imread("./webcam2.jpg")
+	img =  io.imread("./webcam2.jpg")
+        lx, ly, type = img.shape
 	# Cropping
-	crop_lena = lena[100: - 100, 100: - 100]
+	crop_img = img[lx/4:-lx/4, ly/4:-ly/4]
 	# up <-> down flip
-	flip_ud_lena = np.flipud(crop_lena)
+	# flip_ud_lena = np.flipud(crop_lena)
 	# rotation
-	rotate_lena = ndimage.rotate(lena, 45)
-	plt.imshow(rotate_lena, cmap=plt.cm.gray)
+	# rotate_lena = ndimage.rotate(lena, 45)
+	# plt.imshow(rotate_lena, cmap=plt.cm.gray)
 
-        fig = matplotlib.pyplot.gcf()
-        fig.set_size_inches(1,1)
-        fig.savefig('test2png.png',dpi=100)
+	image_gray = rgb2gray(img)
+
+	#blobs_log = blob_log(image_gray, max_sigma=30, num_sigma=10, threshold=.1)
+	# Compute radii in the 3rd column.
+	#blobs_log[:, 2] = blobs_log[:, 2] * sqrt(2)
+
+	#blobs_dog = blob_dog(image_gray, max_sigma=30, threshold=.1)
+	#blobs_dog[:, 2] = blobs_dog[:, 2] * sqrt(2)
+
+	#blobs_doh = blob_doh(image_gray, max_sigma=30, threshold=.01)
+
+	#blobs_list = [blobs_log, blobs_dog, blobs_doh]
+	colors = ['yellow', 'lime', 'red']
+	titles = ['Laplacian of Gaussian', 'Difference of Gaussian', 'Determinant of Hessian']
+	#sequence = zip(blobs_list, colors, titles)
+
+	#for blobs, color, title in sequence:
+    	#	fig, ax = plt.subplots(1, 1)
+    	#	ax.set_title(title)
+    	#	ax.imshow(image, interpolation='nearest')
+    	#	for blob in blobs:
+        #		y, x, r = blob
+        #		c = plt.Circle((x, y), r, color=color, linewidth=2, fill=False)
+        #		ax.add_patch(c)
+
+
+	plt.figure(figsize=(1.5, 1.5))
+
+	plt.axis('off')
+	plt.imshow(crop_img, cmap=plt.cm.gray)
+
         plt.savefig("plot.jpg")
 
         image = load_image('./plot.jpg')
