@@ -155,16 +155,42 @@ void setStep(std::vector<int> gpios_out, int values[4]){
 }
 
 void forward(std::vector<int> gpios_out, int delay, int steps){
-  int values[2][4] = {{1, 0, 1, 1},
-                      {1, 1, 0, 1}};
+  int values[4][4] = {{1, 0, 1, 0},
+                      {1, 0, 0, 1},
+                      {0, 1, 0, 1},
+                      {0, 1, 1, 0}};
 
-    int j=0;
-    for (j=0; j<2; j++){
-    	setStep(gpios_out, values[j]);
-    	usleep(delay);
-    }
+  for (int i = 0; i < steps; i++){
+    setStep(gpios_out, values[0]);
+    usleep(delay);
+    setStep(gpios_out, values[1]);
+    usleep(delay);
+    setStep(gpios_out, values[2]);
+    usleep(delay);
+    setStep(gpios_out, values[3]);
+    usleep(delay);
+  }
 }
  
+void backwards(std::vector<int> gpios_out, int delay, int steps){  
+
+  int values[4][4] = {{1, 0, 1, 0},
+                      {1, 0, 0, 1},
+                      {1, 0, 0, 1},
+                      {0, 1, 1, 0}};
+
+  for (int i = 0; i < steps; i++){
+    setStep(gpios_out, values[0]);
+    usleep(delay);
+    setStep(gpios_out, values[1]);
+    usleep(delay);
+    setStep(gpios_out, values[2]);
+    usleep(delay);
+    setStep(gpios_out, values[3]);
+    usleep(delay);
+  }
+}
+
 void stop(std::vector<int> gpios_out){
   int values[4][4] = {{0, 0, 0, 0}};
 
@@ -383,9 +409,9 @@ int main(int argc, char* argv[])
      };
 */
      
-     //button = GPIORead(22); 
+     button = GPIORead(22); 
      if (button) {
-        forward(gpios_out, delay, 100);
+        forward(gpios_out, delay, 10);
      	// load  webcam image
      	//rwop=SDL_RWFromFile((images_path + "/webcam.jpg").c_str(), "rb");
      	//webcam=IMG_LoadJPG_RW(rwop);
