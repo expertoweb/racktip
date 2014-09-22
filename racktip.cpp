@@ -1,168 +1,171 @@
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
 #include <cassert>
 #include <iostream>
-#include <fstream>
+#include <libgen.h>
 #include <vector>
 #include <string>
-#include <libgen.h>
 #include <stdio.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
-#include <signal.h>
 #include "gpio.hpp"
+#include "graphics.hpp"
 
-void setStep(std::vector<int> gpios_out, int values[4]){
-    int j=0;
+#define DELAY  100
+#define STEPS  100
+#define HEIGHT 160
+#define WIDTH  128
+#define RADIUS 20
 
-    for (int &i : gpios_out)
-    {
-        GPIOWrite(i, values[j]);
-        j++;
-    } 
+void forward(std::vector<int> gpios_out, std::vector<int> gpios_first, std::vector<int> gpios_second, int delay, int steps){
+
+   std::vector<int>::iterator pin; 
+   std::vector<int>::iterator val; 
+
+   for (pin = gpios_out.begin(), val = gpios_first.begin(); pin != gpios_out.end(); ++pin, ++val)
+   {
+       	GPIOWrite(*pin, *val);
+   }
+   usleep(delay);
+   for (pin = gpios_out.begin(), val = gpios_second.begin(); pin != gpios_out.end(); ++pin, ++val)
+   {
+       	GPIOWrite(*pin, *val);
+   }
+   usleep(delay);
+
 }
 
-void forward(std::vector<int> gpios_out, int delay, int steps){
-  int values[2][4] = {{1, 0, 1, 1},
-                      {1, 1, 0, 1}};
 
-    int j=0;
-    for (j=0; j<2; j++){
-    	setStep(gpios_out, values[j]);
-    	usleep(delay);
-    }
+void backwards(std::vector<int> gpios_out, std::vector<int> gpios_first, std::vector<int> gpios_second, int delay, int steps){
+
+   std::vector<int>::iterator pin; 
+   std::vector<int>::iterator val; 
+
+   for (pin = gpios_out.begin(), val = gpios_second.begin(); pin != gpios_out.end(); ++pin, ++val)
+   {
+       	GPIOWrite(*pin, *val);
+   }
+   usleep(delay);
+   for (pin = gpios_out.begin(), val = gpios_first.begin(); pin != gpios_out.end(); ++pin, ++val)
+   {
+       	GPIOWrite(*pin, *val);
+   }
+   usleep(delay);
+
 }
  
-void stop(std::vector<int> gpios_out){
-  int values[4][4] = {{0, 0, 0, 0}};
+void stop(std::vector<int> gpios_out, std::vector<int> gpios_stop){
 
-  setStep(gpios_out, values[0]);
-}
+  std::vector<int>::iterator pin; 
+  std::vector<int>::iterator val; 
 
-void Write(std::string s1, std::string s2){
-    char line[100];
- 
-    std::ifstream is(s1.c_str());
-    std::ofstream os(s2.c_str());
-
-    if (is.is_open() && os.is_open()){
-       while (!is.eof()){
-          is.getline(line,100,'\n');
-          os << line << std::endl;
-       }
-    }
-    else{
-       if (!is.is_open()){
-          std::cout << std::endl << s1 <<" couldn't be opened. Creat and write something in a.txt, and try again." << std::endl;
-       }
-       else{
-           std::cout << std::endl << s2 <<" couldn't be opened. Creat and write something in a.txt, and try again." << std::endl;
-       }
-    }
+  for (pin = gpios_out.begin(), val = gpios_stop.begin(); pin != gpios_stop.end(); ++pin, ++val)
+  {
+      GPIOWrite(*pin, *val);
+  } 
 }
 
 int main(int argc, char* argv[])
 {
+  std::vector<int> gpios_in = {22};
+  std::vector<int> gpios_out = {4, 17, 18, 23};
+  std::vector<int> gpios_first = {1, 1, 0, 1};
+  std::vector<int> gpios_second = {1, 0, 1, 1};
+  std::vector<int> gpios_stop = {0, 0, 0, 0};
+
+  std::vector<int>::iterator pin; 
+
   int button =  1;
-  int delay = 1000;
-  std::vector<int> gpios_in (1);
-  std::vector<int> gpios_out (4);
-  gpios_out = {4, 17, 18, 23};
-  gpios_in = {22};
 
-  if (argc > 0){
-      delay = atoi(argv[1]);
-  }
+  SDL_putenv("SDL_FBDEV=/dev/fb1");
 
-  //SDL_putenv("SDL_FBDEV=/dev/fb1");
-  //SDL_putenv("SDL_VIDEODRIVER=fbcon");
-
-  //std::string images_path (dirname(argv[0]));
-  //images_path += "/images";
+  std::string images_path (dirname(argv[0]));
+  images_path += "/images";
 
   /* Init */
-  //if(SDL_Init(SDL_INIT_VIDEO) != 0)
-//	fprintf(stderr,"Could not initialize SDL: %s\n",SDL_GetError()); /* Error? */
+  if(SDL_Init(SDL_INIT_VIDEO) != 0){
+	fprintf(stderr,"Could not initialize SDL: %s\n",SDL_GetError());
+        exit(1);
+  }
 
+  SDL_ShowCursor(0);
   	
   // load support for the JPG and PNG image formats
-  //int flags=IMG_INIT_JPG|IMG_INIT_PNG;
-  //int initted=IMG_Init(flags);
-  //if(initted&flags != flags) {
-  //  printf("IMG_Init: Failed to init required jpg and png support!\n");
-  //  printf("IMG_Init: %s\n", IMG_GetError());
-    // handle error
-  //}
+  int flags=IMG_INIT_JPG|IMG_INIT_PNG;
+  int initted=IMG_Init(flags);
+  if(initted&flags != flags) {
+    printf("IMG_Init: Failed to init required jpg and png support!\n");
+    printf("IMG_Init: %s\n", IMG_GetError());
+    exit(1);
+  }
   
-  //printf("SDL Initialized\n");
-  //SDL_Surface *screen;
-  //SDL_Rect dstRect;
-  //SDL_Surface *webcam, *inter;
-  //SDL_RWops *rwop;
+  printf("SDL Initialized\n");
+  SDL_Surface *screen;
+  SDL_Rect dstRect;
+  SDL_Surface *webcam, *inter;
+  SDL_RWops *rwop;
 
 
-  //if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
-  //    fprintf(stderr,
-  //            "Couldn't initialize SDL: %s\n", SDL_GetError());
-  //    exit(1);
-  //}
+  if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
+      fprintf(stderr,
+              "Couldn't initialize SDL: %s\n", SDL_GetError());
+      exit(1);
+  }
 
   /* Clean up on exit */
-  //atexit(SDL_Quit);
+  atexit(SDL_Quit);
     
   /*
    * Initialize the display in a 128x160 8-bit palettized mode,
    * requesting a software surface
    */
-  //screen = SDL_SetVideoMode(128, 160, 8, SDL_DOUBLEBUF|SDL_SWSURFACE);
-  //if ( screen == NULL ) {
-  //      fprintf(stderr, "Couldn't set 128x160 video mode: %s\n",
-   //                     SDL_GetError());
-   //     exit(1);
-  //}
+  screen = SDL_SetVideoMode(WIDTH, HEIGHT, 8, SDL_DOUBLEBUF|SDL_SWSURFACE);
+  if ( screen == NULL ) {
+      fprintf(stderr, "Couldn't set 128x160 video mode: %s\n",
+                       SDL_GetError());
+      exit(1);
+  }
 
   //load the SDL logo bitmap to a temporary surface
-  //SDL_Surface* temp = SDL_LoadBMP((images_path + "/background.bmp").c_str());  //PROBLEM LINE
-  //if (temp == NULL)   //TEMP KEEPS RETURNING NULL
-  //{
-  //	printf("Unable to load bitmap: %s\n", SDL_GetError());
-  //	return 1;
-  //};
+  SDL_Surface* temp = SDL_LoadBMP((images_path + "/background.bmp").c_str());  //PROBLEM LINE
+  if (temp == NULL)   //TEMP KEEPS RETURNING NULL
+  {
+      printf("Unable to load bitmap: %s\n", SDL_GetError());
+      exit(1);
+  };
   
   //create the working SDL_Surface which matches the display format
   //of the temporary surface
-  //SDL_Surface* bg = SDL_DisplayFormat(temp);
-  //SDL_FreeSurface(temp);
+  SDL_Surface* bg = SDL_DisplayFormat(temp);
+  SDL_FreeSurface(temp);
 
   // load  webcam image
-  //rwop=SDL_RWFromFile((images_path + "/webcam.jpg").c_str(), "rb");
-  //webcam=IMG_LoadJPG_RW(rwop);
-  //if(!webcam) {
-   //    	printf("IMG_LoadJPG_RW: %s\n", IMG_GetError());
-  //} 
+  rwop=SDL_RWFromFile((images_path + "/webcam.jpg").c_str(), "rb");
+  webcam=IMG_LoadJPG_RW(rwop);
+  if(!webcam) {
+      printf("IMG_LoadJPG_RW: %s\n", IMG_GetError());
+  } 
 
-  //Write(s2,s3);
-
-  //SDL_Event event;
+  SDL_Event event;
   bool quit = false;
-  int y=0;
-  int x=0;
-  for (int &i : gpios_out)
+  int dir=-1, y=80;
+
+  for (pin = gpios_out.begin(); pin != gpios_out.end(); ++pin)
   {
-	GPIOExport(i);
+      GPIOExport(*pin);
   }	 
-  for (int &i : gpios_out)
+
+  for (pin = gpios_out.begin(); pin != gpios_out.end(); ++pin)
   {
-	GPIODirection(i,OUT);
+      GPIODirection(*pin,OUT);
   }	 
-  for (int &i : gpios_in)
+
+  for (pin = gpios_in.begin(); pin != gpios_in.end(); ++pin)
   {
-	GPIOExport(i);
+      GPIOExport(*pin);
   }	 
-  for (int &i : gpios_in)
+
+  for (pin = gpios_in.begin(); pin != gpios_in.end(); ++pin)
   {
-	GPIODirection(i,OUT);
+      GPIODirection(*pin,IN);
   }
   
   //This is the main message loop of the game
@@ -173,11 +176,11 @@ int main(int argc, char* argv[])
      //inter=IMG_LoadJPG_RW(rwop);
      //if(!inter) {
      //   printf("IMG_LoadJPG_RW: %s\n", IMG_GetError());
-        // handle error
+     //	  quit(1);
      //}  
 
      //check the message queue for an event
-     /*if(SDL_PollEvent(&event))
+     if(SDL_PollEvent(&event))
      {
   	switch(event.type)
   	{
@@ -187,12 +190,6 @@ int main(int argc, char* argv[])
 
            case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT){
-    			SDL_LockSurface(webcam);
-			Uint32 rawpixel = get_pixel32( webcam, event.button.x, event.button.y);
-			Uint8 red, green, blue;
-			SDL_GetRGB(rawpixel, webcam->format, &red, &green, &blue);
-			printf("Pixel pressed is %u: %d, %d, %d!\n", rawpixel, red, green, blue); 
-    			SDL_UnlockSurface(webcam);
 		}
 		break;
 
@@ -201,27 +198,15 @@ int main(int argc, char* argv[])
   		switch(event.key.keysym.sym)
   		{
   			case SDLK_ESCAPE:
-  				quit = true;
-  				break;
+  			    quit = true;
+  			    break;
   			case SDLK_UP:
-           		    for (int &i : gpios_out)
-      			    {
-        			const std::string cmd = "echo \"1\" > /sys/class/gpio/gpio" + boost::lexical_cast<std::string>(i) + "/value";
-        			//std::clog << cmd << '\n';
-        			const int error = std::system(cmd.c_str());
-        			assert(!error);
-      			    } 
-  			    x = x + 1;
   			    break;
   			case SDLK_DOWN:
-           		    for (int &i : gpios_out)
-      			    {
-        			const std::string cmd = "echo \"0\" > /sys/class/gpio/gpio" + boost::lexical_cast<std::string>(i) + "/value";
-        			//std::clog << cmd << '\n';
-        			const int error = std::system(cmd.c_str());
-        			assert(!error);
-      			    }
-  			    y = y + 1;
+  			    break;
+  			case SDLK_LEFT:
+  			    break;
+  			case SDLK_RIGHT:
   			    break;
   		}
                 
@@ -229,53 +214,85 @@ int main(int argc, char* argv[])
   	};
 
      };
-*/
+
+     SDL_Delay(DELAY);
+
+     y += dir;
+
+     if (y == 80){
+	dir = -1;
+     }
+     else if (y==-80){
+	dir = 1;
+     }
      
      //button = GPIORead(22); 
      if (button) {
-        forward(gpios_out, delay, 100);
+        forward(gpios_out, gpios_first, gpios_second, DELAY, STEPS);
      	// load  webcam image
      	//rwop=SDL_RWFromFile((images_path + "/webcam.jpg").c_str(), "rb");
      	//webcam=IMG_LoadJPG_RW(rwop);
      	//if(!webcam) {
-//        	printf("IMG_LoadJPG_RW: %s\n", IMG_GetError());
-        	// handle error
+       	//     printf("IMG_LoadJPG_RW: %s\n", IMG_GetError());
+	//     exit(1);
      	//}  
      }
      else {
-	stop(gpios_out);
+	stop(gpios_out, gpios_stop);
      }
   
+     dstRect.x = 0;
+     dstRect.y = y;
+
      //draw the background sprite
-     //SDL_BlitSurface(bg, NULL, screen, NULL);
+     SDL_BlitSurface(bg, NULL, screen, &dstRect);
 
-     //dstRect.x = x;
-     //dstRect.y = y;
+     int x = rand() % (WIDTH - 4) + 2;
+     int y = rand() % (HEIGHT - 4) + 2;
+     int r = rand() % (RADIUS - 10) + 10;
+     int c = ((rand() % 0xff) << 16) +
+             ((rand() % 0xff) << 8) +
+             (rand() % 0xff);
+ 
+     if (r >= 4)
+     {
+        if (x < r + 2)
+            x = r + 2;
+        else if (x > WIDTH - r - 2)
+            x = WIDTH - r - 2;
+ 
+        if (y < r + 2)
+            y = r + 2;
+        else if (y > HEIGHT - r - 2)
+            y = HEIGHT - r - 2;
+     }
 
-     //SDL_BlitSurface(webcam, NULL, screen, &dstRect);
-     //SDL_BlitSurface(inter, NULL, screen, &dstRect);
-  
+     //SDL_LockSurface(screen);
+     //draw_circle(screen, x, y, r, (Uint8) 0x00);
+     //SDL_FreeSurface(screen);
+
      //update the current window
-     //SDL_UpdateRect(screen, 0, 0, 0, 0);
+     //SDL_UpdateRect(screen, 0, 0, WIDTH, HEIGHT);
+
+     SDL_Flip(screen);
   };
 
-  for (int &i : gpios_in)
+  for (pin = gpios_out.begin(); pin != gpios_out.end(); ++pin)
   {
-	GPIOUnexport(i);
+	GPIOUnexport(*pin);
   }	 
 
-  for (int &i : gpios_in)
+  for (pin = gpios_in.begin(); pin != gpios_in.end(); ++pin)
   {
-	GPIOUnexport(i);
+	GPIOUnexport(*pin);
   }
   
   //free the allocated memory for the background surface
-  //SDL_FreeSurface(bg);
-  //SDL_Delay(2000);
+  SDL_FreeSurface(bg);
 
   /* Exit */
-  //SDL_Quit();
-  //printf("SDL Shutdown\n");
+  SDL_Quit();
+  printf("SDL Shutdown\n");
   /* Done */
   return 0;
 }
