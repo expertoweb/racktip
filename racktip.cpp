@@ -5,144 +5,13 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string.h>
+#include <string>
 #include <libgen.h>
 #include <stdio.h>
-//#include <SDL/SDL.h>
-//#include <SDL/SDL_image.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 #include <signal.h>
-#include <iostream>
-#include <boost/lexical_cast.hpp>
-#include <boost/gil/extension/io/jpeg_io.hpp>
-#include <boost/timer.hpp>
-
-#define IN  0
-#define OUT 1
-
-#define LOW  0
-#define HIGH 1
-
-std::string exec(std::string cmd) {
-    FILE* pipe = popen(cmd.c_str(), "r");
-    if (!pipe) return "ERROR";
-    char buffer[128];
-    std::string result = "";
-    while(!feof(pipe)) {
-    	if(fgets(buffer, 128, pipe) != NULL)
-    		result += buffer;
-    }
-    pclose(pipe);
-    return result;
-}
-
-
-static int GPIOExport(int pin)
-{
-#define BUFFER_MAX 3
-	char buffer[BUFFER_MAX];
-	ssize_t bytes_written;
-	int fd;
-
-	fd = open("/sys/class/gpio/export", O_WRONLY);
-	if (-1 == fd) {
-		fprintf(stderr, "Failed to open export for writing!\n");
-		return(-1);
-	}
-
-	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
-	write(fd, buffer, bytes_written);
-	close(fd);
-	return(0);
-}
-
-static int GPIOUnexport(int pin)
-{
-	char buffer[BUFFER_MAX];
-	ssize_t bytes_written;
-	int fd;
-
-	fd = open("/sys/class/gpio/unexport", O_WRONLY);
-	if (-1 == fd) {
-		fprintf(stderr, "Failed to open unexport for writing!\n");
-		return(-1);
-	}
-
-	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
-	write(fd, buffer, bytes_written);
-	close(fd);
-	return(0);
-}
-
-static int GPIODirection(int pin, int dir)
-{
-	static const char s_directions_str[]  = "in\0out";
-
-#define DIRECTION_MAX 35
-	char path[DIRECTION_MAX];
-	int fd;
-
-	snprintf(path, DIRECTION_MAX, "/sys/class/gpio/gpio%d/direction", pin);
-	fd = open(path, O_WRONLY);
-	if (-1 == fd) {
-		fprintf(stderr, "Failed to open gpio direction for writing!\n");
-		return(-1);
-	}
-
-	if (-1 == write(fd, &s_directions_str[IN == dir ? 0 : 3], IN == dir ? 2 : 3)) {
-		fprintf(stderr, "Failed to set direction!\n");
-		return(-1);
-	}
-
-	close(fd);
-	return(0);
-}
-
-static int GPIORead(int pin)
-{
-#define VALUE_MAX 30
-	char path[VALUE_MAX];
-	char value_str[3];
-	int fd;
-
-	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
-	fd = open(path, O_RDONLY);
-	if (-1 == fd) {
-		fprintf(stderr, "Failed to open gpio value for reading!\n");
-		return(-1);
-	}
-
-	if (-1 == read(fd, value_str, 3)) {
-		fprintf(stderr, "Failed to read value!\n");
-		return(-1);
-	}
-
-	close(fd);
-
-	return(atoi(value_str));
-}
-
-static int GPIOWrite(int pin, int value)
-{
-	static const char s_values_str[] = "01";
-
-	char path[VALUE_MAX];
-	int fd;
-
-	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
-	fd = open(path, O_WRONLY);
-	if (-1 == fd) {
-		fprintf(stderr, "Failed to open gpio value for writing!\n");
-		return(-1);
-	}
-
-	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1)) {
-		fprintf(stderr, "Failed to write value!\n");
-		return(-1);
-	}
-
-	close(fd);
-	return(0);
-}
+#include "gpio.hpp"
 
 void setStep(std::vector<int> gpios_out, int values[4]){
     int j=0;
@@ -170,49 +39,28 @@ void stop(std::vector<int> gpios_out){
 
   setStep(gpios_out, values[0]);
 }
-  
 
-//Uint32 get_pixel32( SDL_Surface *surface, int x, int y )
-//{
-    //Convert the pixels to 32 bit
-//    Uint32 *pixels = (Uint32 *)surface->pixels;
-    
-    //Get the requested pixel
-//    return pixels[ ( y * surface->w ) + x ];
-//}
-
-//void put_pixel32( SDL_Surface *surface, int x, int y, Uint32 pixel )
-//{
-    //Convert the pixels to 32 bit
-//    Uint32 *pixels = (Uint32 *)surface->pixels;
-    
-    //Set the pixel
-//    pixels[ ( y * surface->w ) + x ] = pixel;
-//}
-
-/*
 void Write(std::string s1, std::string s2){
     char line[100];
  
-    ifstream is(s1.c_str());
-    ofstream os(s2.c_str());
+    std::ifstream is(s1.c_str());
+    std::ofstream os(s2.c_str());
 
     if (is.is_open() && os.is_open()){
        while (!is.eof()){
           is.getline(line,100,'\n');
-          os << line << endl;
+          os << line << std::endl;
        }
     }
     else{
        if (!is.is_open()){
-          cout << endl << s1 <<" couldn't be opened. Creat and write something in a.txt, and try again." << endl;
+          std::cout << std::endl << s1 <<" couldn't be opened. Creat and write something in a.txt, and try again." << std::endl;
        }
        else{
-           cout << endl << s2 <<" couldn't be opened. Creat and write something in a.txt, and try again." << endl;
+           std::cout << std::endl << s2 <<" couldn't be opened. Creat and write something in a.txt, and try again." << std::endl;
        }
     }
 }
-*/
 
 int main(int argc, char* argv[])
 {
