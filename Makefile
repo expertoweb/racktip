@@ -1,13 +1,16 @@
+CFLAGS = -std=c++0x
+SDLFLAGS = `sdl-config --cflags --libs`
+
 all: racktip gpio.o
 
-racktip: racktip.cpp gpio.o graphics.o
-	g++ `sdl-config --cflags --libs` -Wwrite-strings -std=c++0x -lSDL_image -o racktip racktip.cpp gpio.o graphics.o
+racktip: racktip.cpp racktip.hpp constants.hpp gpio.o commands.o
+	g++ $(SDLFLAGS) $(CFLAGS) -lSDL_image -lSDL_ttf -o racktip racktip.cpp gpio.o commands.o
 
 gpio.o: gpio.cpp gpio.hpp
-	g++ -c gpio.cpp
+	g++ $(CFLAGS) -c gpio.cpp
 
-graphics.o: graphics.cpp graphics.hpp
-	g++ -c graphics.cpp
+commands.o: commands.cpp commands.hpp constants.hpp
+	g++ $(CFLAGS) -c commands.cpp
 
 clean:
-	rm -f gpio.o racktip
+	rm -f gpio.o commands.o racktip.hpp racktip 

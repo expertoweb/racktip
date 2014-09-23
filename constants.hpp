@@ -1,0 +1,17 @@
+#define HEIGHT            160
+#define WIDTH             128
+#define DELAY             1000
+#define PLATE_LINE_STEPS  100
+#define TOTAL_STEPS       160
+#define PLATES_X_BEGIN    0
+#define PLATES_Y_BEGIN    -HEIGHT
+#define PLATE_Y_MOVE      6
+#define DROPPER_X_BEGIN   12
+#define DROPPER_Y_BEGIN   30
+#define DROPPER_X_MOVE    6
+#define RADIUS            5
+#define STEPS_PER_PIXEL   10
+#define START_POSITION    100
+#define FIRST_LINE        -130
+#define NEXT_LINE         30
+#define LINE_END          100
