@@ -1,7 +1,0 @@
-gcc `sdl-config --cflags --libs` -std=c++0x -lSDL_image -lboost_timer -lboost_filesystem -o racktip racktip.cpp
-racktip.cpp:203:3: error: expected unqualified-id before ‘for’
-racktip.cpp:210:3: error: expected unqualified-id before ‘for’
-racktip.cpp:217:3: error: expected unqualified-id before ‘for’
-racktip.cpp:224:3: error: expected unqualified-id before ‘for’
-racktip.cpp:233:3: error: expected unqualified-id before ‘while’
-make: *** [all] Error 1
