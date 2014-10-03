@@ -1,0 +1,147 @@
+
+
+Fri Oct  3 12:55:08 2014
+Command line: TestDisk
+
+TestDisk 6.13, Data Recovery Utility, November 2011
+Christophe GRENIER <grenier@cgsecurity.org>
+http://www.cgsecurity.org
+OS: Linux, kernel 3.12.25+ (#1 PREEMPT Sat Aug 2 18:11:04 CEST 2014) armv6l
+Compiler: GCC 4.6
+Compilation date: 2012-05-08T09:26:52
+ext2fs lib: 1.42.5, ntfs lib: 10:0:0, reiserfs lib: none, ewf lib: none
+Warning: can't get size for Disk /dev/mapper/control - 0 B - CHS 1 1 1, sector size=512
+Hard disk list
+Disk /dev/mmcblk0 - 7746 MB / 7388 MiB - CHS 236416 4 16, sector size=512
+
+Partition table type (auto): Intel
+Disk /dev/mmcblk0 - 7746 MB / 7388 MiB
+Partition table type: Intel
+
+Analyse Disk /dev/mmcblk0 - 7746 MB / 7388 MiB - CHS 236416 4 16
+Geometry from i386 MBR: head=166 sector=30
+BAD_RS LBA=8192 2082
+FAT16 at 128/0/1
+check_FAT: Unusual number of reserved sectors 16 (FAT), should be 1.
+Info: size boot_sector 114688, partition 114688
+FAT1 : 16-47
+FAT2 : 48-79
+start_rootdir : 80
+Data : 112-114687
+sectors : 114688
+cluster_size : 16
+no_of_cluster : 7161 (2 - 7162)
+fat_length 32 calculated 28
+heads/cylinder 255 (FAT) != 4 (HD)
+sect/track 63 (FAT) != 16 (HD)
+get_geometry_from_list_part_aux head=4 nbr=4
+get_geometry_from_list_part_aux head=8 nbr=4
+get_geometry_from_list_part_aux head=16 nbr=4
+get_geometry_from_list_part_aux head=32 nbr=4
+get_geometry_from_list_part_aux head=64 nbr=4
+get_geometry_from_list_part_aux head=128 nbr=4
+get_geometry_from_list_part_aux head=240 nbr=1
+Current partition structure:
+check_FAT: Unusual number of reserved sectors 16 (FAT), should be 1.
+Warning: Incorrect number of heads/cylinder 255 (FAT) != 4 (HD)
+Warning: Incorrect number of sectors per track 63 (FAT) != 16 (HD)
+ 1 P FAT32 LBA              128   0  1  1919   3 16     114688
+
+Warning: Bad ending sector (CHS and LBA don't match)
+ 2 P Linux                 1920   0  1 236415   3 16   15007744
+No partition is bootable
+Allow partial last cylinder : Yes
+search_vista_part: 1
+
+search_part()
+Disk /dev/mmcblk0 - 7746 MB / 7388 MiB - CHS 236416 4 16
+FAT16 at 128/0/1
+check_FAT: Unusual number of reserved sectors 16 (FAT), should be 1.
+FAT1 : 16-47
+FAT2 : 48-79
+start_rootdir : 80
+Data : 112-114687
+sectors : 114688
+cluster_size : 16
+no_of_cluster : 7161 (2 - 7162)
+fat_length 32 calculated 28
+heads/cylinder 255 (FAT) != 4 (HD)
+sect/track 63 (FAT) != 16 (HD)
+
+FAT16 at 128/0/1
+     FAT16 LBA              128   0  1  1919   3 16     114688
+     FAT16, 58 MB / 56 MiB
+
+recover_EXT2: s_block_group_nr=0/57, s_mnt_count=232/4294967295, s_blocks_per_group=32768, s_inodes_per_group=8192
+recover_EXT2: s_blocksize=4096
+recover_EXT2: s_blocks_count 1875968
+recover_EXT2: part_size 15007744
+     Linux                 1920   0  1 236415   3 16   15007744
+     EXT4 Large file Sparse superblock Recover, 7683 MB / 7328 MiB
+get_geometry_from_list_part_aux head=4 nbr=4
+get_geometry_from_list_part_aux head=8 nbr=4
+get_geometry_from_list_part_aux head=16 nbr=4
+get_geometry_from_list_part_aux head=32 nbr=4
+get_geometry_from_list_part_aux head=64 nbr=4
+get_geometry_from_list_part_aux head=128 nbr=4
+get_geometry_from_list_part_aux head=240 nbr=1
+Warning: the current number of heads per cylinder is 4 but the correct value may be 128.
+
+Results
+   * FAT16 LBA              128   0  1  1919   3 16     114688
+     FAT16, 58 MB / 56 MiB
+   P Linux                 1920   0  1 236415   3 16   15007744
+     EXT4 Large file Sparse superblock Recover, 7683 MB / 7328 MiB
+
+   P Linux                 1920   0  1 236415   3 16   15007744
+     EXT4 Large file Sparse superblock Recover, 7683 MB / 7328 MiB
+Can't open filesystem. Filesystem seems damaged.
+
+   P Linux                 1920   0  1 236415   3 16   15007744
+     EXT4 Large file Sparse superblock Recover, 7683 MB / 7328 MiB
+Can't open filesystem. Filesystem seems damaged.
+
+interface_write()
+ 1 * FAT16 LBA              128   0  1  1919   3 16     114688
+ 2 P Linux                 1920   0  1 236415   3 16   15007744
+
+search_part()
+Disk /dev/mmcblk0 - 7746 MB / 7388 MiB - CHS 236416 4 16
+FAT16 at 128/0/1
+check_FAT: Unusual number of reserved sectors 16 (FAT), should be 1.
+FAT1 : 16-47
+FAT2 : 48-79
+start_rootdir : 80
+Data : 112-114687
+sectors : 114688
+cluster_size : 16
+no_of_cluster : 7161 (2 - 7162)
+fat_length 32 calculated 28
+heads/cylinder 255 (FAT) != 4 (HD)
+sect/track 63 (FAT) != 16 (HD)
+
+FAT16 at 128/0/1
+     FAT16 LBA              128   0  1  1919   3 16     114688
+     FAT16, 58 MB / 56 MiB
+Search for partition aborted
+get_geometry_from_list_part_aux head=4 nbr=2
+get_geometry_from_list_part_aux head=8 nbr=2
+get_geometry_from_list_part_aux head=16 nbr=2
+get_geometry_from_list_part_aux head=32 nbr=2
+get_geometry_from_list_part_aux head=64 nbr=2
+get_geometry_from_list_part_aux head=128 nbr=2
+Warning: the current number of heads per cylinder is 4 but the correct value may be 128.
+
+Results
+   * FAT16 LBA              128   0  1  1919   3 16     114688
+     FAT16, 58 MB / 56 MiB
+
+interface_write()
+ 1 * FAT16 LBA              128   0  1  1919   3 16     114688
+simulate write!
+
+write_mbr_i386: starting...
+write_all_log_i386: starting...
+No extended partition
+
+TestDisk exited normally.
