@@ -20,8 +20,8 @@ void read_params(){
 				WIDTH = stoi(c);
 		else if (b == "DELAY")
 				DELAY = stoi(c);
-		else if (b == "PLATE_LINE_STEPS")
-				PLATE_LINE_STEPS = stoi(c);
+		else if (b == "STEPS")
+				STEPS = stoi(c);
 		else if (b == "TOTAL_STEPS")
 				TOTAL_STEPS = stoi(c);
 		else if (b == "PLATES_X_BEGIN")
@@ -40,8 +40,8 @@ void read_params(){
 				DROPPER_X_MOVE = stoi(c);
 		else if (b == "RADIUS")
 				RADIUS = stoi(c);
-		else if (b == "STEPS_PER_PIXEL")
-				STEPS_PER_PIXEL = stoi(c);
+		else if (b == "PIXELS_PER_STEP")
+				PIXELS_PER_STEP = stoi(c);
 		else if (b == "START_POSITION")
 				START_POSITION = stoi(c);
 		else if (b == "FIRST_LINE")
@@ -259,6 +259,7 @@ int main(int argc, char* argv[])
 			}
         }
 		else {
+            //std::cout << "forward" << std::endl;
        		forward();
        		y += diry;
 		}

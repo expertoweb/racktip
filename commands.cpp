@@ -5,7 +5,7 @@ void forward(){
    std::vector<int>::iterator pin; 
    std::vector<int>::iterator val; 
 
-   for (int step = 0; step < PLATE_LINE_STEPS; step++){
+   for (int step = 0; step < STEPS; step++){
 	   for (pin = gpios_out.begin(), val = gpios_first.begin(); pin != gpios_out.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
@@ -24,7 +24,7 @@ void right(){
    std::vector<int>::iterator pin;
    std::vector<int>::iterator val;
 
-   for (int step = 0; step < PLATE_LINE_STEPS; step++){
+   for (int step = 0; step < STEPS; step++){
 	   for (pin = gpios_out.begin(), val = gpios_first.begin(); pin != gpios_out.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
@@ -43,7 +43,7 @@ void left(){
    std::vector<int>::iterator pin;
    std::vector<int>::iterator val;
 
-   for (int step = 0; step < PLATE_LINE_STEPS; step++){
+   for (int step = 0; step < STEPS; step++){
 	   for (pin = gpios_out.begin(), val = gpios_first.begin(); pin != gpios_out.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);

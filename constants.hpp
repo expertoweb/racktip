@@ -1,7 +1,7 @@
 #define HEIGHT            160
 #define WIDTH             128
-#define DELAY             10
-#define PLATE_LINE_STEPS  100
+#define DELAY             1000000
+#define STEPS             1
 #define TOTAL_STEPS       160
 #define PLATES_X_BEGIN    0
 #define PLATES_Y_BEGIN    -130
@@ -11,7 +11,7 @@
 #define DROPPER_Y_BEGIN   30
 #define DROPPER_X_MOVE    1
 #define RADIUS            5
-#define STEPS_PER_PIXEL   10
+#define PIXELS_PER_STEP   10
 #define START_POSITION    100
 #define FIRST_LINE        -120
 #define NEXT_LINE         6

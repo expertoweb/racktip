@@ -12,17 +12,18 @@
 #include "commands.hpp"
 
 std::vector<int> gpios_in = {22};
-std::vector<int> gpios_out = {4, 17, 18, 23};
-std::vector<int> gpios_first = {1, 1, 0, 1};
-std::vector<int> gpios_second = {1, 0, 1, 1};
-std::vector<int> gpios_drop = {0, 0, 0, 0};
+//std::vector<int> gpios_out = {4, 17, 18, 23};
+std::vector<int> gpios_out = {4};
+std::vector<int> gpios_first = {1};
+std::vector<int> gpios_second = {0};
+std::vector<int> gpios_drop = {0};
 
 std::vector<std::pair<int, int>> wells;
 
 int HEIGHT;
 int WIDTH;            
 int DELAY;            
-int PLATE_LINE_STEPS;  
+int STEPS;  
 int TOTAL_STEPS;       
 int PLATES_X_BEGIN;    
 int PLATES_Y_BEGIN;    
@@ -32,7 +33,7 @@ int DROPPER_X_END;
 int DROPPER_Y_BEGIN;   
 int DROPPER_X_MOVE;    
 int RADIUS;            
-int STEPS_PER_PIXEL;   
+int PIXELS_PER_STEP;   
 int START_POSITION;    
 int FIRST_LINE;        
 int NEXT_LINE;         
