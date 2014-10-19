@@ -1,68 +1,42 @@
 #include "racktip.hpp"
 
-int diry, dirx, x=0, y=0;
+int diry, dirx, x=DROPPER_X_BEGIN, y=PLATES_Y_BEGIN;
 int button = 0;
 bool dropping = false;
 bool quit = false;
 
+bool is_file_exist(const char *fileName)
+{
+    std::ifstream infile(fileName);
+    return infile.good();
+}
+
 void read_params(){
-	std::ifstream infile("constants.hpp");
+	std::ifstream infile("coordinates.txt");
 
 	std::string a, b, c;
 
-	while (infile >> a >> b >> c)
+	while (infile >> a >> b)
 	{
-		if (a == "//#define")
-			continue;
-		if (b == "HEIGHT")
-				HEIGHT = stoi(c);
-		else if (b == "WIDTH")
-				WIDTH = stoi(c);
-		else if (b == "DELAY")
-				DELAY = stoi(c);
-		else if (b == "STEPS")
-				STEPS = stoi(c);
-		else if (b == "TOTAL_STEPS")
-				TOTAL_STEPS = stoi(c);
-		else if (b == "PLATES_X_BEGIN")
-				PLATES_X_BEGIN = stoi(c);
-		else if (b == "PLATES_Y_BEGIN")
-				PLATES_Y_BEGIN = stoi(c);
-		else if (b == "PLATE_Y_MOVE")
-				PLATE_Y_MOVE = stoi(c);
-		else if (b == "DROPPER_X_BEGIN")
-				DROPPER_X_BEGIN = stoi(c);
-		else if (b == "DROPPER_X_END")
-				DROPPER_X_END = stoi(c);
-		else if (b == "DROPPER_Y_BEGIN")
-				DROPPER_Y_BEGIN = stoi(c);
-		else if (b == "DROPPER_X_MOVE")
-				DROPPER_X_MOVE = stoi(c);
-		else if (b == "RADIUS")
-				RADIUS = stoi(c);
-		else if (b == "PIXELS_PER_STEP")
-				PIXELS_PER_STEP = stoi(c);
-		else if (b == "START_POSITION")
-				START_POSITION = stoi(c);
-		else if (b == "FIRST_LINE")
-				FIRST_LINE = stoi(c);
-		else if (b == "NEXT_LINE")
-				NEXT_LINE = stoi(c);
-		else if (b == "FIRST_WELL")
-				FIRST_WELL = stoi(c);
-		else if (b == "NEXT_WELL")
-				NEXT_WELL = stoi(c);
-		else if (b == "TEXT_X_BEGIN")
-				TEXT_X_BEGIN = stoi(c);
-		else if (b == "TEXT_Y_BEGIN")
-				TEXT_Y_BEGIN = stoi(c);
-		else if (b.substr (0,5) == "WELLS"){
-				int i = stoi(b.substr (6,8));
-				std::string d;
-				infile >> d;
-				wells.push_back(std::make_pair(stoi(c),stoi(d)));
-		}
+		wells.push_back(std::make_pair(stoi(a),stoi(b)));
 	}
+	if (is_file_exist("./position.txt")){
+		read_coordinates();
+	}
+}
+
+void read_coordinates(){
+	std::ifstream input_file("./position.txt");
+	input_file >> x;
+	input_file >> y;
+	std::cout << "read x=" << x << " y=" << y << std::endl;
+}
+
+void write_coordinates(){
+	std::ofstream output_file("./position.txt");
+	output_file << x << " ";
+	output_file << y << std::endl;
+	std::cout << "write x=" << x << " y=" << y << std::endl;
 }
 
 void draw(SDL_Surface *screen, SDL_Surface *bg, SDL_Surface *dropper, TTF_Font *font){
@@ -105,15 +79,13 @@ int main(int argc, char* argv[])
   SDL_Event event;
   TTF_Font* font;
 
-  //SDL_putenv("SDL_FBDEV=/dev/fb1");
+  SDL_putenv("SDL_FBDEV=/dev/fb1");
   // Read parameter file
   read_params();
 
-  x = DROPPER_X_BEGIN;
-  y = PLATES_Y_BEGIN;
 
-  diry=1;
-  dirx=1;
+  diry=PIXELS_PER_STEP;
+  dirx=PIXELS_PER_STEP;
 
   std::string images_path (dirname(argv[0]));
   images_path += "/images";
@@ -148,6 +120,7 @@ int main(int argc, char* argv[])
 
   /* Clean up on exit */
   atexit(SDL_Quit);
+  //atexit(write_coordinates);
     
   /*
    * Initialize the display in a 128x160 8-bit palettized mode,
@@ -191,6 +164,7 @@ int main(int argc, char* argv[])
   //This is the main message loop of the game
   while(!quit)
   {
+     std::cout << "wells contains " << wells.size() << " elements.\n" << std::endl;
      //check the message queue for an event
      if(SDL_PollEvent(&event))
      {
@@ -217,63 +191,77 @@ int main(int argc, char* argv[])
      };
      
 
-     //std::cout << "nums contains " << wells.size() << " elements.\n";
      dropping = false;
 
      button = read_input();
      if (button || wells.empty()) {
     	 wells.clear();
-    	 diry = -1;
-         dirx = -1;
+    	 diry = -PIXELS_PER_STEP;
+         dirx = -PIXELS_PER_STEP;
     	 backwards();
 
-    	 if (x > DROPPER_X_BEGIN)
-    		 x += dirx;
+    	 //if (x > DROPPER_X_BEGIN)
+    	//	 x += PIXELS_PER_STEP;
 
-    	 if (y > PLATES_Y_BEGIN)
-    	     y += diry;
+    	 //if (y > PLATES_Y_BEGIN)
+    	  //   y += PIXELS_PER_STEP;
 
-    	 if (y == PLATES_Y_BEGIN && x == DROPPER_X_BEGIN){
+    	 //if (y == PLATES_Y_BEGIN && x == DROPPER_X_BEGIN){
      		read_params();
-    	 	diry = 1;
-         	dirx = 1;
-    	 }
+    	 //	diry = PIXELS_PER_STEP;
+         //	dirx = PIXELS_PER_STEP;
+    	 //}
      }
      else if (y < TOTAL_STEPS){
-     	//std::cout << "next " << wells.front().first << " " << wells.front().second << "\n";
+     	std::cout << "next " << wells.front().first << " " << wells.front().second << std::endl;
+        std::cout << "x=" << x << ", y=" << y << std::endl;
 
         if (y == wells.front().second) { 
-			if (wells.front().first == x){
-            	//std::cout << "y == wells.front().second && wells.front().first == x" << std::endl;
+		if (wells.front().first == x){
+            		std::cout << "y == wells.front().second && wells.front().first == x" << std::endl;
            		wells.erase(wells.begin());
            		dropping = true;
+                	std::cout << "drop()" << std::endl;
         		drop();
-			}
-			else {
-				if (dirx == 1)
+		}
+		else {
+			if (dirx == PIXELS_PER_STEP){
+                    		std::cout << "right()" << std::endl;
           			right();
-        		else
+                	}
+       			else{
+                    		std::cout << "left()" << std::endl;
           			left();
+                	}
 
        			x += dirx;
-			}
-        }
-		else {
-            //std::cout << "forward" << std::endl;
-       		forward();
-       		y += diry;
 		}
+        }
+	else if (y > wells.front().second) {
+       		std::cout << "backwards()" << std::endl;
+       		backwards();
+		diry = -PIXELS_PER_STEP;
+       		y += diry;
+	}
+	else {
+       		std::cout << "forward()" << std::endl;
+       		forward();
+		diry = PIXELS_PER_STEP;
+       		y += diry;
+	}
 
-       	if (x >= wells.front().first) {
-           	//std::cout << "x >= wells.front().first" << std::endl;
-           	dirx = -1;
+       	if (x > wells.front().first) {
+           	std::cout << "x >= wells.front().first" << std::endl;
+           	dirx = -PIXELS_PER_STEP;
        	}
 
-       	if (x <= wells.front().first){
-           	//std::cout << "x <= wells.front().first" << std::endl;
-           	dirx = 1;
+       	if (x < wells.front().first){
+           	std::cout << "x <= wells.front().first" << std::endl;
+           	dirx = PIXELS_PER_STEP;
        	}
      }
+     std::cout << "x=" << x << ", y=" << y << std::endl;
+     write_coordinates();
 
      if (dropping)
     	 draw(screen, bg, red_dropper, font);
