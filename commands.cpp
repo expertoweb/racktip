@@ -1,83 +1,86 @@
 #include "commands.hpp"
 
-void forward(){
+void forward(int steps){
 
    std::vector<int>::iterator pin; 
    std::vector<int>::iterator val; 
 
-   for (int step = 0; step < STEPS; step++){
 	   for (pin = gpios_out.begin(), val = gpios_forward.begin(); pin != gpios_out.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
+   for (int step = 0; step < steps; step++){
 	   for (pin = gpios_out.begin(), val = gpios_step.begin(); val != gpios_step.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
 	   usleep(MOVE_DELAY);
-	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
-	   {
-		   GPIOWrite(*pin, *val);
-	   }
    }
 }
 
-void right(){
+void right(int steps){
 
    std::vector<int>::iterator pin;
    std::vector<int>::iterator val;
 
-   for (int step = 0; step < STEPS; step++){
-	   for (pin = gpios_out.begin(), val = gpios_right.begin(); pin != gpios_out.end(); ++pin, ++val)
+   for (pin = gpios_out.begin(), val = gpios_right.begin(); pin != gpios_out.end(); ++pin, ++val)
+   {
+	   GPIOWrite(*pin, *val);
+   }
+   for (int step = 0; step < steps; step++){
+	   for (pin = gpios_out.begin(), val = gpios_step.begin(); val != gpios_step.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
 	   usleep(MOVE_DELAY);
-	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
-	   {
-		   GPIOWrite(*pin, *val);
-	   }
    }
 }
 
-void left(){
+void left(int steps){
 
    std::vector<int>::iterator pin;
    std::vector<int>::iterator val;
 
-   for (int step = 0; step < STEPS; step++){
-	   for (pin = gpios_out.begin(), val = gpios_left.begin(); pin != gpios_out.end(); ++pin, ++val)
+   for (pin = gpios_out.begin(), val = gpios_left.begin(); pin != gpios_out.end(); ++pin, ++val)
+   {
+	   GPIOWrite(*pin, *val);
+   }
+   for (int step = 0; step < steps; step++){
+	   for (pin = gpios_out.begin(), val = gpios_step.begin(); val != gpios_step.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
 	   usleep(MOVE_DELAY);
-	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
-	   {
-		   GPIOWrite(*pin, *val);
-	   }
    }
 }
 
-void backwards(){
+void backwards(int steps){
    std::vector<int>::iterator pin; 
    std::vector<int>::iterator val; 
 
-   //for (int step = 0; step < TOTAL_STEPS; step++){
-   	for (pin = gpios_out.begin(), val = gpios_backwards.begin(); pin != gpios_out.end(); ++pin, ++val)
-   	{
+   for (pin = gpios_out.begin(), val = gpios_backwards.begin(); pin != gpios_out.end(); ++pin, ++val)
+   {
    		GPIOWrite(*pin, *val);
-   	}
-   	usleep(MOVE_DELAY);
+   }
+
+   for (int step = 0; step < steps; step++){
    	for (pin = gpios_out.begin(), val = gpios_step.begin(); val != gpios_step.end(); ++pin, ++val)
    	{
    		GPIOWrite(*pin, *val);
-    }
+    	}
    	usleep(MOVE_DELAY);
-   	for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
-   	{
-       	GPIOWrite(*pin, *val);
-   	}
-   //}
+   }
+
+}
+
+void stop(){
+   std::vector<int>::iterator pin; 
+   std::vector<int>::iterator val; 
+
+  for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
+  {
+  	GPIOWrite(*pin, *val);
+  }
 }
  
 void drop(){
@@ -122,6 +125,11 @@ void export_pins(){
 
 void unexport_pins(){
   std::vector<int>::iterator pin; 
+
+  for (pin = gpios_out.begin(); pin != gpios_out.end(); ++pin)
+  {
+      GPIOWrite(*pin, 0);
+  }
 
   for (pin = gpios_out.begin(); pin != gpios_out.end(); ++pin)
   {

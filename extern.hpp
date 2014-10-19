@@ -11,7 +11,6 @@ extern int DROPPER_X_BEGIN;
 extern int DROPPER_Y_BEGIN;
 extern int DROPPER_X_MOVE;
 extern int RADIUS5;
-extern int PIXELS_PER_STEP;
 extern int START_POSITION;
 extern int FIRST_LINE;
 extern int NEXT_LINE;

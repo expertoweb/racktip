@@ -103,7 +103,6 @@ int GPIOWrite(int pin, int value)
 		fprintf(stderr, "Failed to write value!\n");
 		return(-1);
 	}
-    fprintf(stdout, "Write value %d in %d\n", value, pin);
 
 	close(fd);
 	return(0);
