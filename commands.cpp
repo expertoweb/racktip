@@ -10,8 +10,12 @@ void forward(){
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
+	   for (pin = gpios_out.begin(), val = gpios_step.begin(); val != gpios_step.end(); ++pin, ++val)
+	   {
+		   GPIOWrite(*pin, *val);
+	   }
 	   usleep(MOVE_DELAY);
-	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); pin != gpios_out.end(); ++pin, ++val)
+	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
@@ -29,7 +33,7 @@ void right(){
 		   GPIOWrite(*pin, *val);
 	   }
 	   usleep(MOVE_DELAY);
-	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); pin != gpios_out.end(); ++pin, ++val)
+	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
@@ -47,7 +51,7 @@ void left(){
 		   GPIOWrite(*pin, *val);
 	   }
 	   usleep(MOVE_DELAY);
-	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); pin != gpios_out.end(); ++pin, ++val)
+	   for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
 	   {
 		   GPIOWrite(*pin, *val);
 	   }
@@ -64,7 +68,12 @@ void backwards(){
    		GPIOWrite(*pin, *val);
    	}
    	usleep(MOVE_DELAY);
-   	for (pin = gpios_out.begin(), val = gpios_stop.begin(); pin != gpios_out.end(); ++pin, ++val)
+   	for (pin = gpios_out.begin(), val = gpios_step.begin(); val != gpios_step.end(); ++pin, ++val)
+   	{
+   		GPIOWrite(*pin, *val);
+    }
+   	usleep(MOVE_DELAY);
+   	for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
    	{
        	GPIOWrite(*pin, *val);
    	}
@@ -75,12 +84,12 @@ void drop(){
   std::vector<int>::iterator pin; 
   std::vector<int>::iterator val; 
 
-  for (pin = gpios_out.begin(), val = gpios_drop.begin(); pin != gpios_out.end(); ++pin, ++val)
+  for (pin = gpios_out.begin(), val = gpios_drop.begin(); val != gpios_drop.end(); ++pin, ++val)
   {
       GPIOWrite(*pin, *val);
   } 
   usleep(DROP_DELAY);
-  for (pin = gpios_out.begin(), val = gpios_stop.begin(); pin != gpios_out.end(); ++pin, ++val)
+  for (pin = gpios_out.begin(), val = gpios_stop.begin(); val != gpios_stop.end(); ++pin, ++val)
   {
   	  GPIOWrite(*pin, *val);
   }

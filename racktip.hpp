@@ -15,12 +15,13 @@
 
 std::vector<int> gpios_in = {22};
 std::vector<int> gpios_out = {4, 17, 18, 23};
-std::vector<int> gpios_forward = {1, 0, 0 ,1};
-std::vector<int> gpios_backwards = {1, 1, 0, 1};
-std::vector<int> gpios_right = {1, 0, 0, 0};
-std::vector<int> gpios_left = {1, 1, 0, 0};
-std::vector<int> gpios_stop = {0, 0, 0, 0};
-std::vector<int> gpios_drop = {0, 0, 1, 0};
+std::vector<int> gpios_step = {1};
+std::vector<int> gpios_forward = {0, 0, 1, 0};
+std::vector<int> gpios_backwards = {0, 0, 1, 1};
+std::vector<int> gpios_right = {1, 0, 0, 1};
+std::vector<int> gpios_left = {1, 0, 0, 0};
+std::vector<int> gpios_stop = {0, 0};
+std::vector<int> gpios_drop = {0, 1,};
 
 std::vector<std::pair<int, int>> wells;
 

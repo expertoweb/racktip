@@ -21,6 +21,7 @@ extern int TEXT_Y_BEGIN;
 
 extern std::vector<int> gpios_out; 
 extern std::vector<int> gpios_in;
+extern std::vector<int> gpios_step;
 extern std::vector<int> gpios_forward;
 extern std::vector<int> gpios_backwards;
 extern std::vector<int> gpios_right;
